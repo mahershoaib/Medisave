@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediSave — Cheaper Medicines, Free Delivery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: #F1F5F9;
+      color: #1E293B;
+      min-height: 100vh;
+    }
+
+    .page-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #F1F5F9;
+    }
+
+    /* HEADER */
+    .ms-header {
+      background: #0EA5A0;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .ms-logo { color: #fff; font-size: 21px; font-weight: 700; letter-spacing: -0.3px; }
+    .ms-tagline { color: rgba(255,255,255,0.82); font-size: 11px; margin-top: 1px; }
+    .ms-logo-wrap { display: flex; flex-direction: column; }
+    .ms-header-badge {
+      background: rgba(255,255,255,0.18);
+      color: #fff;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 0.5px solid rgba(255,255,255,0.3);
+    }
+
+    /* PROGRESS */
+    .ms-progress { padding: 20px 24px 0; background: #F1F5F9; }
+    .ms-steps-row { display: flex; align-items: center; }
+    .ms-step { display: flex; flex-direction: column; align-items: center; flex: 1; }
+    .ms-step-circle {
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 600;
+      border: 2px solid #CBD5E1;
+      background: #fff; color: #94A3B8;
+      position: relative; z-index: 2;
+      transition: all 0.2s;
+    }
+    .ms-step-circle.done { background: #0EA5A0; border-color: #0EA5A0; color: #fff; }
+    .ms-step-circle.active { background: #fff; border-color: #0EA5A0; color: #0EA5A0; }
+    .ms-step-label { font-size: 10px; color: #94A3B8; margin-top: 5px; text-align: center; }
+    .ms-step-label.active { color: #0EA5A0; font-weight: 600; }
+    .ms-step-label.done { color: #0EA5A0; }
+    .ms-step-line { flex: 1; height: 2px; background: #E2E8F0; margin-top: -20px; transition: background 0.2s; }
+    .ms-step-line.done { background: #0EA5A0; }
+
+    /* BODY */
+    .ms-body { padding: 16px 16px 24px; }
+
+    .ms-card {
+      background: #fff;
+      border: 0.5px solid #E2E8F0;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 12px;
+    }
+    .ms-card-title { font-size: 16px; font-weight: 700; color: #1E293B; margin-bottom: 4px; }
+    .ms-card-sub { font-size: 12px; color: #64748B; margin-bottom: 18px; }
+
+    /* UPLOAD */
+    .upload-zone {
+      border: 2px dashed #CBD5E1;
+      border-radius: 12px;
+      padding: 40px 20px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .upload-zone:hover { border-color: #0EA5A0; background: #F8FFFE; }
+    .upload-zone.has-file { border-color: #0EA5A0; background: #F0FAFA; border-style: solid; }
+    .upload-icon { font-size: 36px; color: #0EA5A0; margin-bottom: 10px; }
+    .upload-title { font-size: 15px; font-weight: 600; color: #1E293B; margin-bottom: 4px; }
+    .upload-sub { font-size: 12px; color: #64748B; }
+    .upload-types { display: flex; gap: 6px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+    .upload-type-badge {
+      font-size: 10px; background: #F1F5F9; color: #475569;
+      padding: 3px 9px; border-radius: 4px; border: 0.5px solid #E2E8F0;
+    }
+    .file-confirmed {
+      display: flex; align-items: center; gap: 12px;
+      background: #F0FAFA; border: 0.5px solid #0EA5A0;
+      border-radius: 10px; padding: 12px 16px; margin-top: 14px;
+    }
+    .file-confirmed-icon { color: #0EA5A0; font-size: 22px; flex-shrink: 0; }
+    .file-confirmed-name { font-size: 13px; font-weight: 600; color: #1E293B; }
+    .file-confirmed-size { font-size: 11px; color: #64748B; margin-top: 2px; }
+    .file-remove { margin-left: auto; font-size: 18px; color: #94A3B8; cursor: pointer; }
+    .file-remove:hover { color: #E53E3E; }
+
+    /* BUTTONS */
+    .ms-btn {
+      width: 100%; background: #0EA5A0; color: #fff;
+      border: none; border-radius: 10px; padding: 14px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      margin-top: 6px; letter-spacing: 0.2px;
+      font-family: inherit; transition: background 0.15s, transform 0.1s;
+    }
+    .ms-btn:hover { background: #0C9690; }
+    .ms-btn:active { transform: scale(0.99); }
+    .ms-btn:disabled { background: #CBD5E1; cursor: not-allowed; transform: none; }
+    .ms-btn-outline {
+      width: 100%; background: #fff; color: #0EA5A0;
+      border: 1.5px solid #0EA5A0; border-radius: 10px; padding: 12px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      margin-top: 10px; font-family: inherit;
+      transition: background 0.15s;
+    }
+    .ms-btn-outline:hover { background: #F0FAFA; }
+
+    /* SAVINGS BANNER */
+    .savings-banner {
+      background: #F0FDF4; border: 1px solid #86EFAC;
+      border-radius: 12px; padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px; margin-bottom: 14px;
+    }
+    .savings-icon { font-size: 28px; color: #16A34A; flex-shrink: 0; }
+    .savings-text { font-size: 12px; color: #15803D; }
+    .savings-amount { font-size: 22px; font-weight: 800; color: #15803D; margin-top: 2px; }
+
+    /* MEDICINE LIST */
+    .medicine-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .medicine-item {
+      border: 0.5px solid #E2E8F0; border-radius: 10px;
+      padding: 12px 14px; display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 10px;
+    }
+    .med-info { flex: 1; }
+    .med-name { font-size: 13px; font-weight: 700; color: #1E293B; margin-bottom: 2px; }
+    .med-qty { font-size: 11px; color: #64748B; }
+    .med-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-size: 10px; background: #F0FAFA; color: #0E7490;
+      border: 0.5px solid #A5F3F0; border-radius: 4px;
+      padding: 2px 8px; margin-top: 5px;
+    }
+    .med-prices { text-align: right; flex-shrink: 0; }
+    .med-original { font-size: 11px; color: #94A3B8; text-decoration: line-through; }
+    .med-discounted { font-size: 16px; font-weight: 800; color: #0EA5A0; }
+
+    /* PRICE SUMMARY */
+    .price-summary {
+      background: #F8FAFC; border: 0.5px solid #E2E8F0;
+      border-radius: 10px; padding: 14px 16px;
+    }
+    .price-row { display: flex; justify-content: space-between; font-size: 13px; color: #475569; padding: 5px 0; }
+    .price-row .val { font-weight: 500; }
+    .price-row.discount .val, .price-row.delivery .val { color: #16A34A; font-weight: 700; }
+    .price-row.discount { color: #16A34A; }
+    .price-row.delivery { color: #16A34A; }
+    .price-row.total {
+      border-top: 0.5px solid #E2E8F0; margin-top: 6px;
+      padding-top: 11px; font-size: 16px; font-weight: 800; color: #1E293B;
+    }
+
+    /* FORM */
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      font-size: 11px; font-weight: 700; color: #475569;
+      margin-bottom: 6px; display: block;
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
+    .form-input {
+      width: 100%; border: 0.5px solid #CBD5E1; border-radius: 8px;
+      padding: 11px 14px; font-size: 14px; color: #1E293B;
+      font-family: inherit; background: #fff; transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .form-input:focus {
+      outline: none; border-color: #0EA5A0;
+      box-shadow: 0 0 0 3px rgba(14,165,160,0.12);
+    }
+    .form-input::placeholder { color: #CBD5E1; }
+    .form-hint { font-size: 11px; color: #94A3B8; margin-top: 5px; }
+    textarea.form-input { resize: none; height: 90px; line-height: 1.6; }
+
+    /* CONFIRMATION */
+    .confirm-header { text-align: center; padding: 8px 0 18px; }
+    .confirm-check {
+      width: 60px; height: 60px; background: #F0FDF4;
+      border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; margin: 0 auto 14px;
+    }
+    .confirm-check i { font-size: 32px; color: #16A34A; }
+    .confirm-title { font-size: 20px; font-weight: 800; color: #1E293B; margin-bottom: 5px; }
+    .confirm-sub { font-size: 13px; color: #64748B; }
+
+    .order-number {
+      background: #F0FAFA; border: 1px solid #A5F3F0;
+      border-radius: 10px; padding: 12px 16px;
+      text-align: center; margin: 14px 0 18px;
+    }
+    .order-number-label { font-size: 11px; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; }
+    .order-number-val { font-size: 22px; font-weight: 800; color: #0EA5A0; letter-spacing: 1.5px; margin-top: 3px; }
+
+    .order-summary-section-title {
+      font-size: 11px; font-weight: 700; color: #475569;
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px;
+    }
+    .order-summary-row {
+      display: flex; justify-content: space-between;
+      font-size: 13px; padding: 7px 0;
+      border-bottom: 0.5px solid #F1F5F9; color: #475569;
+    }
+    .order-summary-row:last-child { border-bottom: none; }
+    .order-summary-row.savings { color: #16A34A; font-weight: 700; }
+    .order-summary-row.final {
+      font-size: 16px; font-weight: 800; color: #1E293B;
+      border-top: 0.5px solid #E2E8F0; padding-top: 12px; margin-top: 4px;
+      border-bottom: none;
+    }
+
+    .status-badges { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+    .status-badge-group { }
+    .status-badge-label { font-size: 11px; color: #64748B; margin-bottom: 5px; }
+    .delivery-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #F0FDF4; color: #15803D; font-size: 11px;
+      font-weight: 700; padding: 5px 11px; border-radius: 6px;
+      border: 0.5px solid #86EFAC;
+    }
+    .cod-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: #EFF6FF; color: #1D4ED8; font-size: 11px;
+      font-weight: 700; padding: 5px 11px; border-radius: 6px;
+      border: 0.5px solid #BFDBFE;
+    }
+
+    .support-card {
+      background: #FFF7ED; border: 0.5px solid #FED7AA;
+      border-radius: 10px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 12px; margin-top: 12px;
+    }
+    .support-icon { font-size: 22px; color: #EA580C; flex-shrink: 0; }
+    .support-text { font-size: 12px; color: #9A3412; }
+    .support-num { font-size: 14px; font-weight: 700; color: #9A3412; margin: 2px 0; }
+
+    /* STEP PANELS */
+    .step-panel { display: none; }
+    .step-panel.active { display: block; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 540px) {
+      .ms-body { padding: 14px 12px 32px; }
+      .ms-header { padding: 14px 16px; }
+      .ms-header-badge { display: none; }
+      .ms-progress { padding: 16px 16px 0; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- HEADER -->
+  <div class="ms-header">
+    <div class="ms-logo-wrap">
+      <div class="ms-logo">💊 MediSave</div>
+      <div class="ms-tagline">Cheaper Medicines, Free Delivery</div>
+    </div>
+    <div class="ms-header-badge">Pakistan's #1 Medicine Delivery</div>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="ms-progress">
+    <div class="ms-steps-row">
+      <div class="ms-step">
+        <div class="ms-step-circle active" id="sc1">1</div>
+        <div class="ms-step-label active" id="sl1">Upload</div>
+      </div>
+      <div class="ms-step-line" id="line1"></div>
+      <div class="ms-step">
+        <div class="ms-step-circle" id="sc2">2</div>
+        <div class="ms-step-label" id="sl2">Medicines</div>
+      </div>
+      <div class="ms-step-line" id="line2"></div>
+      <div class="ms-step">
+        <div class="ms-step-circle" id="sc3">3</div>
+        <div class="ms-step-label" id="sl3">Details</div>
+      </div>
+      <div class="ms-step-line" id="line3"></div>
+      <div class="ms-step">
+        <div class="ms-step-circle" id="sc4">4</div>
+        <div class="ms-step-label" id="sl4">Confirmed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN BODY -->
+  <div class="ms-body">
+
+    <!-- ═══ STEP 1: UPLOAD ═══ -->
+    <div class="step-panel active" id="step1">
+      <div class="ms-card">
+        <div class="ms-card-title">Upload Your Prescription</div>
+        <div class="ms-card-sub">Our pharmacists verify and source the best generic alternatives at lower prices</div>
+        <div class="upload-zone" id="uploadZone" onclick="triggerUpload()" role="button" tabindex="0" aria-label="Upload prescription file">
+          <div class="upload-icon"><i class="ti ti-cloud-upload" aria-hidden="true"></i></div>
+          <div class="upload-title">Tap to upload prescription</div>
+          <div class="upload-sub">JPG, PNG or PDF — max 10MB</div>
+          <div class="upload-types">
+            <span class="upload-type-badge">JPG</span>
+            <span class="upload-type-badge">PNG</span>
+            <span class="upload-type-badge">PDF</span>
+            <span class="upload-type-badge">Max 10MB</span>
+          </div>
+        </div>
+        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf" style="display:none" onchange="handleFile(this)" aria-label="Choose prescription file">
+        <div class="file-confirmed hidden" id="fileConfirmed">
+          <i class="ti ti-file-check file-confirmed-icon" aria-hidden="true"></i>
+          <div style="flex:1">
+            <div class="file-confirmed-name" id="fileName">prescription.jpg</div>
+            <div class="file-confirmed-size" id="fileSize">Ready to process</div>
+          </div>
+          <i class="ti ti-x file-remove" onclick="removeFile(event)" title="Remove file" aria-label="Remove file"></i>
+        </div>
+      </div>
+      <button class="ms-btn" id="checkBtn" disabled onclick="goTo(2)">
+        <i class="ti ti-stethoscope" aria-hidden="true"></i> Check Medicines →
+      </button>
+    </div>
+
+    <!-- ═══ STEP 2: PRICE BREAKDOWN ═══ -->
+    <div class="step-panel" id="step2">
+      <div class="savings-banner">
+        <i class="ti ti-tag savings-icon" aria-hidden="true"></i>
+        <div>
+          <div class="savings-text">Total savings on this order</div>
+          <div class="savings-amount">You saved Rs 1,000 🎉</div>
+        </div>
+      </div>
+
+      <div class="ms-card">
+        <div class="ms-card-title">Your Medicines</div>
+        <div class="ms-card-sub">All items verified by our licensed pharmacist</div>
+        <div class="medicine-list">
+          <div class="medicine-item">
+            <div class="med-info">
+              <div class="med-name">Metformin 500mg</div>
+              <div class="med-qty">Qty: 60 tablets &middot; 2× daily</div>
+              <div class="med-badge"><i class="ti ti-shield-check" style="font-size:11px" aria-hidden="true"></i> Pharmacist Verified</div>
+            </div>
+            <div class="med-prices">
+              <div class="med-original">Rs 1,200</div>
+              <div class="med-discounted">Rs 960</div>
+            </div>
+          </div>
+          <div class="medicine-item">
+            <div class="med-info">
+              <div class="med-name">Lisinopril 10mg</div>
+              <div class="med-qty">Qty: 30 tablets &middot; 1× daily</div>
+              <div class="med-badge"><i class="ti ti-shield-check" style="font-size:11px" aria-hidden="true"></i> Pharmacist Verified</div>
+            </div>
+            <div class="med-prices">
+              <div class="med-original">Rs 890</div>
+              <div class="med-discounted">Rs 712</div>
+            </div>
+          </div>
+          <div class="medicine-item">
+            <div class="med-info">
+              <div class="med-name">Atorvastatin 20mg</div>
+              <div class="med-qty">Qty: 30 tablets &middot; 1× at night</div>
+              <div class="med-badge"><i class="ti ti-shield-check" style="font-size:11px" aria-hidden="true"></i> Pharmacist Verified</div>
+            </div>
+            <div class="med-prices">
+              <div class="med-original">Rs 1,560</div>
+              <div class="med-discounted">Rs 1,248</div>
+            </div>
+          </div>
+          <div class="medicine-item">
+            <div class="med-info">
+              <div class="med-name">Omeprazole 20mg</div>
+              <div class="med-qty">Qty: 28 capsules &middot; 1× before meal</div>
+              <div class="med-badge"><i class="ti ti-shield-check" style="font-size:11px" aria-hidden="true"></i> Pharmacist Verified</div>
+            </div>
+            <div class="med-prices">
+              <div class="med-original">Rs 1,350</div>
+              <div class="med-discounted">Rs 1,080</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-summary">
+          <div class="price-row">
+            <span>Original total</span>
+            <span class="val">Rs 5,000</span>
+          </div>
+          <div class="price-row discount">
+            <span>MediSave discount (20%)</span>
+            <span class="val">− Rs 1,000</span>
+          </div>
+          <div class="price-row delivery">
+            <span><i class="ti ti-truck" style="font-size:13px;vertical-align:-1px;margin-right:3px" aria-hidden="true"></i>Delivery charges</span>
+            <span class="val">FREE</span>
+          </div>
+          <div class="price-row total">
+            <span>Total payable</span>
+            <span>Rs 4,000</span>
+          </div>
+        </div>
+      </div>
+
+      <button class="ms-btn" onclick="goTo(3)">Enter Delivery Details →</button>
+      <button class="ms-btn-outline" onclick="goTo(1)">← Change Prescription</button>
+    </div>
+
+    <!-- ═══ STEP 3: ORDER DETAILS ═══ -->
+    <div class="step-panel" id="step3">
+      <div class="ms-card">
+        <div class="ms-card-title">Delivery Details</div>
+        <div class="ms-card-sub">We'll deliver to your doorstep within 2–4 hours</div>
+
+        <div class="form-group">
+          <label class="form-label" for="nameInput">Full Name</label>
+          <input class="form-input" type="text" id="nameInput" placeholder="e.g. Ahmed Raza" autocomplete="name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="phoneInput">Mobile Number</label>
+          <input class="form-input" type="tel" id="phoneInput" placeholder="03XX-XXXXXXX" autocomplete="tel">
+          <div class="form-hint">Pakistani mobile number format</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="addressInput">Full Address</label>
+          <textarea class="form-input" id="addressInput" placeholder="House/Flat no., Street, Area, City" autocomplete="street-address"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="landmarkInput">
+            Landmark <span style="color:#94A3B8;font-weight:400;text-transform:none;font-size:11px;letter-spacing:0">(optional)</span>
+          </label>
+          <input class="form-input" type="text" id="landmarkInput" placeholder="e.g. Near DHA Phase 5 main gate">
+        </div>
+      </div>
+
+      <button class="ms-btn" onclick="placeOrder()">
+        <i class="ti ti-lock" aria-hidden="true"></i> Place Order &mdash; Rs 4,000 →
+      </button>
+      <button class="ms-btn-outline" onclick="goTo(2)">← Back to Medicines</button>
+    </div>
+
+    <!-- ═══ STEP 4: CONFIRMATION ═══ -->
+    <div class="step-panel" id="step4">
+      <div class="ms-card">
+        <div class="confirm-header">
+          <div class="confirm-check">
+            <i class="ti ti-circle-check" aria-hidden="true"></i>
+          </div>
+          <div class="confirm-title">Order Placed!</div>
+          <div class="confirm-sub">Your medicines are being packed. Track below.</div>
+        </div>
+
+        <div class="order-number">
+          <div class="order-number-label">Your Order Number</div>
+          <div class="order-number-val" id="orderNum">#MS-2025-00847</div>
+        </div>
+
+        <div class="order-summary-section-title">Order Summary</div>
+        <div class="order-summary-row">
+          <span>Metformin 500mg &times; 60</span>
+          <span style="color:#0EA5A0;font-weight:700">Rs 960</span>
+        </div>
+        <div class="order-summary-row">
+          <span>Lisinopril 10mg &times; 30</span>
+          <span style="color:#0EA5A0;font-weight:700">Rs 712</span>
+        </div>
+        <div class="order-summary-row">
+          <span>Atorvastatin 20mg &times; 30</span>
+          <span style="color:#0EA5A0;font-weight:700">Rs 1,248</span>
+        </div>
+        <div class="order-summary-row">
+          <span>Omeprazole 20mg &times; 28</span>
+          <span style="color:#0EA5A0;font-weight:700">Rs 1,080</span>
+        </div>
+        <div class="order-summary-row savings">
+          <span>💚 Total savings</span>
+          <span>− Rs 1,000</span>
+        </div>
+        <div class="order-summary-row">
+          <span>Delivery charges</span>
+          <span style="color:#16A34A;font-weight:700">FREE</span>
+        </div>
+        <div class="order-summary-row final">
+          <span>Amount to pay on delivery</span>
+          <span>Rs 4,000</span>
+        </div>
+
+        <div class="status-badges">
+          <div class="status-badge-group">
+            <div class="status-badge-label">Delivery</div>
+            <span class="delivery-badge"><i class="ti ti-truck" style="font-size:13px" aria-hidden="true"></i> Arriving in 2–4 hrs</span>
+          </div>
+          <div class="status-badge-group">
+            <div class="status-badge-label">Payment</div>
+            <span class="cod-badge"><i class="ti ti-cash" style="font-size:13px" aria-hidden="true"></i> Cash on Delivery</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="support-card">
+        <i class="ti ti-headset support-icon" aria-hidden="true"></i>
+        <div>
+          <div class="support-text">Questions about your order?</div>
+          <div class="support-num">0800-MEDISAVE (0800-6334728)</div>
+          <div class="support-text">Available 8am – 10pm, 7 days a week</div>
+        </div>
+      </div>
+
+      <button class="ms-btn" onclick="startOver()" style="margin-top:14px">
+        <i class="ti ti-plus" aria-hidden="true"></i> Place Another Order
+      </button>
+    </div>
+
+  </div><!-- /ms-body -->
+</div><!-- /page-wrap -->
+
+<script>
+  var currentStep = 1;
+
+  function goTo(step) {
+    document.getElementById('step' + currentStep).classList.remove('active');
+    currentStep = step;
+    document.getElementById('step' + currentStep).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateProgress();
+  }
+
+  function updateProgress() {
+    for (var i = 1; i <= 4; i++) {
+      var circle = document.getElementById('sc' + i);
+      var label = document.getElementById('sl' + i);
+      circle.classList.remove('done', 'active');
+      label.classList.remove('done', 'active');
+      if (i < currentStep) {
+        circle.classList.add('done');
+        label.classList.add('done');
+        circle.innerHTML = '<i class="ti ti-check" style="font-size:12px" aria-hidden="true"></i>';
+      } else if (i === currentStep) {
+        circle.classList.add('active');
+        label.classList.add('active');
+        circle.innerHTML = i;
+      } else {
+        circle.innerHTML = i;
+      }
+      if (i < 4) {
+        var line = document.getElementById('line' + i);
+        if (line) {
+          if (i < currentStep) line.classList.add('done');
+          else line.classList.remove('done');
+        }
+      }
+    }
+  }
+
+  function triggerUpload() {
+    document.getElementById('fileInput').click();
+  }
+
+  function handleFile(input) {
+    var file = input.files[0];
+    if (!file) return;
+    var maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      alert('File is too large. Please upload a file under 10MB.');
+      input.value = '';
+      return;
+    }
+    var zone = document.getElementById('uploadZone');
+    zone.classList.add('has-file');
+    zone.innerHTML = '<div class="upload-icon"><i class="ti ti-circle-check" style="color:#0EA5A0" aria-hidden="true"></i></div><div class="upload-title" style="color:#0EA5A0">Prescription uploaded</div><div class="upload-sub" style="color:#0EA5A0">Tap to change file</div>';
+
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatSize(file.size) + ' \u00b7 Ready to process';
+    document.getElementById('fileConfirmed').classList.remove('hidden');
+    document.getElementById('checkBtn').disabled = false;
+  }
+
+  function removeFile(e) {
+    e.stopPropagation();
+    var zone = document.getElementById('uploadZone');
+    zone.classList.remove('has-file');
+    zone.innerHTML = '<div class="upload-icon"><i class="ti ti-cloud-upload" aria-hidden="true"></i></div><div class="upload-title">Tap to upload prescription</div><div class="upload-sub">JPG, PNG or PDF \u2014 max 10MB</div><div class="upload-types"><span class="upload-type-badge">JPG</span><span class="upload-type-badge">PNG</span><span class="upload-type-badge">PDF</span><span class="upload-type-badge">Max 10MB</span></div>';
+    document.getElementById('fileConfirmed').classList.add('hidden');
+    document.getElementById('fileInput').value = '';
+    document.getElementById('checkBtn').disabled = true;
+  }
+
+  function formatSize(bytes) {
+    if (bytes < 1024 * 1024) return Math.round(bytes / 1024) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function placeOrder() {
+    var name = document.getElementById('nameInput').value.trim();
+    var phone = document.getElementById('phoneInput').value.trim();
+    var address = document.getElementById('addressInput').value.trim();
+    if (!name) { alert('Please enter your full name.'); document.getElementById('nameInput').focus(); return; }
+    if (!phone) { alert('Please enter your mobile number.'); document.getElementById('phoneInput').focus(); return; }
+    if (!address) { alert('Please enter your delivery address.'); document.getElementById('addressInput').focus(); return; }
+    var orderNum = '#MS-2025-' + String(Math.floor(Math.random() * 90000) + 10000);
+    document.getElementById('orderNum').textContent = orderNum;
+    goTo(4);
+  }
+
+  function startOver() {
+    document.getElementById('nameInput').value = '';
+    document.getElementById('phoneInput').value = '';
+    document.getElementById('addressInput').value = '';
+    document.getElementById('landmarkInput').value = '';
+    removeFile({ stopPropagation: function(){} });
+    goTo(1);
+  }
+
+  document.getElementById('uploadZone').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); triggerUpload(); }
+  });
+
+  document.addEventListener('dragover', function(e) { e.preventDefault(); });
+  document.getElementById('uploadZone').addEventListener('dragover', function(e) {
+    e.preventDefault(); this.style.borderColor = '#0EA5A0'; this.style.background = '#F0FAFA';
+  });
+  document.getElementById('uploadZone').addEventListener('dragleave', function() {
+    if (!this.classList.contains('has-file')) { this.style.borderColor = ''; this.style.background = ''; }
+  });
+  document.getElementById('uploadZone').addEventListener('drop', function(e) {
+    e.preventDefault(); this.style.borderColor = ''; this.style.background = '';
+    var files = e.dataTransfer.files;
+    if (files.length > 0) {
+      var input = document.getElementById('fileInput');
+      var dt = new DataTransfer();
+      dt.items.add(files[0]);
+      input.files = dt.files;
+      handleFile(input);
+    }
+  });
+</script>
+</body>
+</html>
